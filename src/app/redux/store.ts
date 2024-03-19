@@ -1,13 +1,14 @@
 import { configureStore } from '@reduxjs/toolkit'
-import userReducer from '@/app/redux/userSlice';
-import roomReducer from '@/app/redux/roomSlice';
+import appReducer from '@/app/redux/appSlice';
 import { applyMiddleware } from 'redux'
 import createSagaMiddleware from 'redux-saga'
 import { take, takeEvery,  call, put  } from 'redux-saga/effects';
-import { registration, enter, roomAdded } from '@/app/redux/userSlice'
+import { registration, enter, roomAdded, setAuth, setMess } from '@/app/redux/appSlice'
 import { getAuth, signInWithEmailAndPassword , createUserWithEmailAndPassword } from "firebase/auth";
 import { initializeApp } from "firebase/app";
 import { getFirestore, collection, getDocs, doc, getDoc  } from "firebase/firestore";
+
+import { message } from 'antd';
 const saga = createSagaMiddleware()
 
 const firebaseConfig = {
@@ -26,7 +27,7 @@ const db = getFirestore(app);
 
 export const store = configureStore({
   reducer: {
-    users: userReducer,
+    app: appReducer,
   },
   middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(saga),
 })
@@ -46,35 +47,40 @@ function* workRegistration(action:any){
   const {username, password } = action.payload        
   let ok:boolean = yield createNewAccount(username, password)
   let temp:{} = {}
-  if(!ok) {
+  //if(!ok) {
     temp = yield getRooms()
     yield put(roomAdded(temp))
-  } else console.log('Error');
+  //} else console.log('Error');
   console.log(temp, ok);
 }
 function* workEnter(action:any){
   const {username, password } = action.payload 
-  let ok:boolean = yield signIn(username, password)
-  let temp:{} = {}
-  if(!ok) {
+  const ok:boolean = yield call(signIn, username, password)
+  if (ok) {
+    let temp:{} = {}
     temp = yield getRooms()
     yield put(roomAdded(temp))
-  } else console.log('Error');
-  console.log(temp, ok);
+    yield put(setAuth())
+    yield put(setMess(''))
+  }else yield put(setMess('Invalid email or password.'))
+  
 }
 
-function signIn(username:string, password:string): boolean {
-  const temp = signInWithEmailAndPassword(auth, username, password)
+async function signIn(username:string, password:string) {
+  let result:boolean = false
+  await signInWithEmailAndPassword(auth, username, password)
   .then((userCredential) => {
     const user = userCredential.user;
-    return true    
-  })
-  .catch((error) => {
+    
+    result = true
+
+  }).catch((error) => {
     const errorCode = error.code;
     const errorMessage = error.message;
-    return false 
+    //console.log('signIn', errorCode);
+    result = false
   });
-  
+  return result
 }
 
 function createNewAccount(username:string, password:string): boolean{
@@ -86,6 +92,8 @@ function createNewAccount(username:string, password:string): boolean{
   .catch((error) => {
     const errorCode = error.code;
     const errorMessage = error.message;
+    console.log('createNewAccount', errorCode, errorMessage);
+    
   });
    
 }
@@ -107,6 +115,8 @@ async function getRooms(){
   return temp;
    
 }
+
+
 
 export type RootState = ReturnType<typeof store.getState>
 export type AppDispatch = typeof store.dispatch

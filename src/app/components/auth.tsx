@@ -1,10 +1,9 @@
 'use client'
 import React from 'react';
-import { Button, Checkbox, Form, type FormProps, Input, Flex } from 'antd';
-
-import { getAuth, signInWithEmailAndPassword , createUserWithEmailAndPassword } from "firebase/auth";
+import { Button, Checkbox, Form, message, Input, Flex } from 'antd';
+import type { RootState } from '@/app/redux/store'
 import { useRouter } from 'next/navigation'
-import { registration, enter } from '@/app/redux/userSlice'
+import { registration, enter } from '@/app/redux/appSlice'
 import { useSelector, useDispatch } from 'react-redux';
 
 
@@ -42,74 +41,109 @@ const onFinishFailed: FormProps<FieldType>["onFinishFailed"] = (errorInfo) => {
 */
 
 
+
+
 const Auth: React.FC = () => {
   	
   const [form] = Form.useForm();
+  const [messageApi, contextHolder] = message.useMessage();
   const router = useRouter()
+  const auth = useSelector((state: RootState) => state.app.auth);
+  const mess = useSelector((state: RootState) => state.app.mess);
   const dispatch = useDispatch()
   
+  if(auth) {
+    router.push(`/mainlayout/`)
+  }
+
+  const info = (message:string) => {
+    messageApi.info(message);
+  };
+
+  if (mess != '') {
+    info(mess)
+  }
+
   return (
-    <Form
-    form={form}
-    name="basic"
-    labelCol={{ span: 8 }}
-    wrapperCol={{ span: 16 }}
-    style={{ maxWidth: 600 }}
-    initialValues={{ remember: true }}
-    //onFinish={onFinish}
-    //onFinishFailed={onFinishFailed}
-    autoComplete="off"
-  >
-    <Form.Item<FieldType>
-      label="Username"
-      name="username"
-      
-      rules={[{ required: true, message: 'Please input your username!' }]}
-    >
-      <Input/>
-    </Form.Item>
+    <>
+      {contextHolder}
+      <Form
+        form={form}
+        name="basic"
+        labelCol={{ span: 8 }}
+        wrapperCol={{ span: 16 }}
+        style={{ maxWidth: 600 }}
+        initialValues={{ remember: true }}
+        //onFinish={onFinish}
+        //onFinishFailed={onFinishFailed}
+        autoComplete="off"
+      >
+        <Form.Item<FieldType>
+          label="Username"
+          name="username"
+          rules={[{ required: true, message: "Please input your username!" }]}
+        >
+          <Input />
+        </Form.Item>
 
-    <Form.Item<FieldType>
-      label="Password"
-      name="password"
-      
-      rules={[{ required: true, message: 'Please input your password!' }]}
-    >
-      <Input.Password />
-    </Form.Item>
+        <Form.Item<FieldType>
+          label="Password"
+          name="password"
+          rules={[{ required: true, message: "Please input your password!" }]}
+        >
+          <Input.Password />
+        </Form.Item>
 
-    <Form.Item<FieldType>
-      name="remember"
-      valuePropName="checked"
-      wrapperCol={{ offset: 8, span: 16 }}
-    >
-      <Checkbox>Remember me</Checkbox>
-    </Form.Item>
-    <Flex justify='center' align='center'>
-      <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
-        <Button type="primary" htmlType="submit"  onClick={()=>{
-            let values = form.getFieldsValue()
-            dispatch(registration(values))
-            router.push(`/mainlayout/`)
-        }}>
-          Reg
-        </Button>
-      </Form.Item>
-      <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
-        <Button type="primary" htmlType="button" onClick={() => {
-          let values = form.getFieldsValue()
-          dispatch(enter(values))
-          router.push(`/mainlayout/`) 
-        }}>
-          Enter
-        </Button>
-      </Form.Item>
-    </Flex>
-          <p>mike10@ukr.net</p>
-          <p>123456</p>
-  </Form>
-  )
+        <Form.Item<FieldType>
+          name="remember"
+          valuePropName="checked"
+          wrapperCol={{ offset: 8, span: 16 }}
+        >
+          <Checkbox>Remember me</Checkbox>
+        </Form.Item>
+        <Flex justify="center" align="center">
+          <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
+            <Button
+              type="primary"
+              htmlType="submit"
+              onClick={() => {
+                let values = form.getFieldsValue();
+                try {
+                  dispatch(registration(values));
+                } catch (error) {
+                  console.log(error);
+                }
+                //router.push(`/mainlayout/`)
+              }}
+            >
+              Reg
+            </Button>
+          </Form.Item>
+          <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
+            <Button
+              type="primary"
+              htmlType="button"
+              onClick={() => {
+                let values = form.getFieldsValue();
+                try {
+                  dispatch(enter(values));
+                } catch (error) {
+                  console.log(error);
+                }
+              }}
+            >
+              Enter
+            </Button>
+          </Form.Item>
+        </Flex>
+        <p>mike10@ukr.net</p>
+        <p>123456</p>
+      </Form>
+    </>
+  );
   
 }
+
+
 
 export default Auth

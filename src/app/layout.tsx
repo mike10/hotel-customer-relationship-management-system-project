@@ -6,10 +6,10 @@ import { Provider } from 'react-redux'
 import {store} from '@/app/redux/store'
 const inter = Inter({ subsets: ["latin"] });
 
-export const metadata: Metadata = {
+/* export const metadata: Metadata = {
   title: "Hotel Customer Relationship Management System Project",
   description: "Система управления взаимоотношениями с клиентами отеля",
-}; 
+};  */
 
 export default function RootLayout({
   children,
