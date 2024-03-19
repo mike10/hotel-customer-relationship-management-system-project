@@ -1,10 +1,11 @@
-
 'use client'
 import React from 'react';
 import { Button, Checkbox, Form, type FormProps, Input, Flex } from 'antd';
-import { initializeApp } from "firebase/app";
-import { getAuth, signInWithEmailAndPassword , createUserWithEmailAndPassword } from "firebase/auth";
 
+import { getAuth, signInWithEmailAndPassword , createUserWithEmailAndPassword } from "firebase/auth";
+import { useRouter } from 'next/navigation'
+import { registration, enter } from '@/app/redux/userSlice'
+import { useSelector, useDispatch } from 'react-redux';
 
 
 type FieldType = {
@@ -13,20 +14,10 @@ type FieldType = {
   remember?: string;
 };
 
-const firebaseConfig = {
-  apiKey: "AIzaSyDUiAodSQPNH8r0s6F3BfaMS-b1zX1LKUI",
-  authDomain: "finance-blog-f38f2.firebaseapp.com",
-  databaseURL: "https://finance-blog-f38f2-default-rtdb.europe-west1.firebasedatabase.app",
-  projectId: "finance-blog-f38f2",
-  storageBucket: "finance-blog-f38f2.appspot.com",
-  messagingSenderId: "140148358827",
-  appId: "1:140148358827:web:99183db5674ede654981ee"
-};
 
-const app = initializeApp(firebaseConfig);
 
-const auth = getAuth(app);
 
+/*
 const onFinish: FormProps<FieldType>["onFinish"] = (values) => {
   console.log('Success:', values);
   createUserWithEmailAndPassword(auth, values?.username, values?.password)
@@ -48,12 +39,14 @@ const onFinish: FormProps<FieldType>["onFinish"] = (values) => {
 const onFinishFailed: FormProps<FieldType>["onFinishFailed"] = (errorInfo) => {
   console.log('Failed:', errorInfo);
 };
-
+*/
 
 
 const Auth: React.FC = () => {
   	
   const [form] = Form.useForm();
+  const router = useRouter()
+  const dispatch = useDispatch()
   
   return (
     <Form
@@ -63,21 +56,23 @@ const Auth: React.FC = () => {
     wrapperCol={{ span: 16 }}
     style={{ maxWidth: 600 }}
     initialValues={{ remember: true }}
-    onFinish={onFinish}
-    onFinishFailed={onFinishFailed}
+    //onFinish={onFinish}
+    //onFinishFailed={onFinishFailed}
     autoComplete="off"
   >
     <Form.Item<FieldType>
       label="Username"
       name="username"
+      
       rules={[{ required: true, message: 'Please input your username!' }]}
     >
-      <Input />
+      <Input/>
     </Form.Item>
 
     <Form.Item<FieldType>
       label="Password"
       name="password"
+      
       rules={[{ required: true, message: 'Please input your password!' }]}
     >
       <Input.Password />
@@ -92,33 +87,26 @@ const Auth: React.FC = () => {
     </Form.Item>
     <Flex justify='center' align='center'>
       <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
-        <Button type="primary" htmlType="submit" >
+        <Button type="primary" htmlType="submit"  onClick={()=>{
+            let values = form.getFieldsValue()
+            dispatch(registration(values))
+            router.push(`/mainlayout/`)
+        }}>
           Reg
         </Button>
       </Form.Item>
       <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
         <Button type="primary" htmlType="button" onClick={() => {
-          
           let values = form.getFieldsValue()
-          console.log('values', values);
-          
-           signInWithEmailAndPassword(auth, values.username, values.password)
-          .then((userCredential) => {
-            // Signed in 
-            const user = userCredential.user;
-            console.log('Signed in', user);
-            
-          })
-          .catch((error) => {
-            const errorCode = error.code;
-            const errorMessage = error.message;
-          });
+          dispatch(enter(values))
+          router.push(`/mainlayout/`) 
         }}>
           Enter
         </Button>
       </Form.Item>
     </Flex>
-    
+          <p>mike10@ukr.net</p>
+          <p>123456</p>
   </Form>
   )
   

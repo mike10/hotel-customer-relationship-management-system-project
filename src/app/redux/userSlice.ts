@@ -1,27 +1,23 @@
 import { createSlice } from '@reduxjs/toolkit'
 
-const initialState: [{
-    id: number,
-    text: string,
-    completed: boolean
-  } ]= [{id : 0, text: '', completed: false}]
-  
-
+const initialState: {
+    rooms: Array<Array<string>>,
+ } = {rooms:[]}
 
 const userSlice = createSlice({
   name: 'users',
   initialState,
   reducers: {
-    userAdded(state, action) {
-      state.push({
-        id: action.payload.id,
-        text: action.payload.text,
-        completed: false,
-      })
+    registration(state, action) {},
+    enter(state, action) {},
+    userAdded() {},
+    roomAdded(state, action) {
+      console.log('roomAdded',action.payload);
+      
+      state.rooms = action.payload;
     },
-    
   },
 })
 
-export const { userAdded, } = userSlice.actions
+export const { userAdded, roomAdded, registration, enter } = userSlice.actions
 export default userSlice.reducer
