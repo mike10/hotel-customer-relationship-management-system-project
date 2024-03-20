@@ -10,6 +10,7 @@ import { getFirestore, collection, getDocs, doc, getDoc  } from "firebase/firest
 
 import { message } from 'antd';
 const saga = createSagaMiddleware()
+let errorMessReg = ''
 
 const firebaseConfig = {
   apiKey: "AIzaSyDUiAodSQPNH8r0s6F3BfaMS-b1zX1LKUI",
@@ -45,14 +46,17 @@ function* watchClickSaga(){
 
 function* workRegistration(action:any){
   const {username, password } = action.payload        
-  let ok:boolean = yield createNewAccount(username, password)
-  let temp:{} = {}
-  //if(!ok) {
+  let ok:boolean = yield call(createNewAccount, username, password)
+  if(ok) {
+    let temp:{} = {}
     temp = yield getRooms()
     yield put(roomAdded(temp))
-  //} else console.log('Error');
-  console.log(temp, ok);
+    yield put(setAuth())
+    yield put(setMess(''))
+  } else yield put(setMess(errorMessReg))
+  
 }
+
 function* workEnter(action:any){
   const {username, password } = action.payload 
   const ok:boolean = yield call(signIn, username, password)
@@ -71,31 +75,35 @@ async function signIn(username:string, password:string) {
   await signInWithEmailAndPassword(auth, username, password)
   .then((userCredential) => {
     const user = userCredential.user;
-    
     result = true
-
   }).catch((error) => {
     const errorCode = error.code;
     const errorMessage = error.message;
-    //console.log('signIn', errorCode);
     result = false
   });
   return result
 }
 
-function createNewAccount(username:string, password:string): boolean{
-  createUserWithEmailAndPassword(auth, username, password)
+async function createNewAccount(username:string, password:string){
+  let result:boolean = false
+  await createUserWithEmailAndPassword(auth, username, password)
   .then((userCredential) => {
     const user = userCredential.user;
-    return true 
+    result = true 
   })
-  .catch((error) => {
+  .catch(async (error) => {
     const errorCode = error.code;
     const errorMessage = error.message;
-    console.log('createNewAccount', errorCode, errorMessage);
+    if(errorCode == 'auth/email-already-in-use'){
+      errorMessReg = 'This email address already exists!'
+    }else {
+      errorMessReg = 'Invalid email or password!'
+    }
+    console.log(errorCode, errorMessage);
     
+    result = false
   });
-   
+  return result 
 }
 
 async function getRooms(){

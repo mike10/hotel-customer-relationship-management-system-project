@@ -1,6 +1,6 @@
 'use client'
-import React from 'react';
-import { Button, Checkbox, Form, message, Input, Flex } from 'antd';
+import React, { useEffect } from 'react';
+import { Button, Checkbox, Form, message, Input, Flex, FormProps } from 'antd';
 import type { RootState } from '@/app/redux/store'
 import { useRouter } from 'next/navigation'
 import { registration, enter } from '@/app/redux/appSlice'
@@ -13,32 +13,7 @@ type FieldType = {
   remember?: string;
 };
 
-
-
-
-/*
-const onFinish: FormProps<FieldType>["onFinish"] = (values) => {
-  console.log('Success:', values);
-  createUserWithEmailAndPassword(auth, values?.username, values?.password)
-  .then((userCredential) => {
-    // Signed up 
-    const user = userCredential.user;
-    console.log(user);
-    
-  })
-  .catch((error) => {
-    const errorCode = error.code;
-    const errorMessage = error.message;
-    // ..
-  });
-  
-      
-};
-
-const onFinishFailed: FormProps<FieldType>["onFinishFailed"] = (errorInfo) => {
-  console.log('Failed:', errorInfo);
-};
-*/
+let regButtonPass: boolean = true
 
 
 
@@ -52,17 +27,48 @@ const Auth: React.FC = () => {
   const mess = useSelector((state: RootState) => state.app.mess);
   const dispatch = useDispatch()
   
+  useEffect(() => {
+    
+  }, []);
+
   if(auth) {
     router.push(`/mainlayout/`)
   }
 
   const info = (message:string) => {
-    messageApi.info(message);
+    messageApi.error(message);
   };
 
   if (mess != '') {
     info(mess)
   }
+
+  const onFinish: FormProps<FieldType>["onFinish"] = (values:FieldType) => {
+    if (regButtonPass == true) {
+      dispatch(registration(values));
+    } else {
+      dispatch(enter(values));
+    }
+
+    if (values.remember) {
+      sessionStorage.setItem('username', values.username);
+      sessionStorage.setItem('password', values.password);
+    }
+  };
+  
+  const onFinishFailed: FormProps<FieldType>["onFinishFailed"] = (errorInfo) => {
+    console.log('Failed:', errorInfo);
+  };
+
+  useEffect(() => {
+    //let values2 = form.getFieldsValue();
+    let username:string|null = sessionStorage.getItem('username')
+    let password:string|null = sessionStorage.getItem('password');
+    if (username && password) {
+      dispatch(enter({ username, password }));
+    }
+    
+  }, []);
 
   return (
     <>
@@ -74,8 +80,8 @@ const Auth: React.FC = () => {
         wrapperCol={{ span: 16 }}
         style={{ maxWidth: 600 }}
         initialValues={{ remember: true }}
-        //onFinish={onFinish}
-        //onFinishFailed={onFinishFailed}
+        onFinish={onFinish}
+        onFinishFailed={onFinishFailed}
         autoComplete="off"
       >
         <Form.Item<FieldType>
@@ -96,24 +102,19 @@ const Auth: React.FC = () => {
 
         <Form.Item<FieldType>
           name="remember"
-          valuePropName="checked"
+          //valuePropName="checked"
           wrapperCol={{ offset: 8, span: 16 }}
         >
           <Checkbox>Remember me</Checkbox>
         </Form.Item>
+
         <Flex justify="center" align="center">
           <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
             <Button
               type="primary"
               htmlType="submit"
               onClick={() => {
-                let values = form.getFieldsValue();
-                try {
-                  dispatch(registration(values));
-                } catch (error) {
-                  console.log(error);
-                }
-                //router.push(`/mainlayout/`)
+                regButtonPass = true
               }}
             >
               Reg
@@ -122,22 +123,15 @@ const Auth: React.FC = () => {
           <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
             <Button
               type="primary"
-              htmlType="button"
+              htmlType="submit"
               onClick={() => {
-                let values = form.getFieldsValue();
-                try {
-                  dispatch(enter(values));
-                } catch (error) {
-                  console.log(error);
-                }
+                regButtonPass = false
               }}
             >
               Enter
             </Button>
           </Form.Item>
         </Flex>
-        <p>mike10@ukr.net</p>
-        <p>123456</p>
       </Form>
     </>
   );

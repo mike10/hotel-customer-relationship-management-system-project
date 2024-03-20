@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux';
 import type { RootState } from '@/app/redux/store'
 
 const Page = ({ params }: { params: { slug: string } }) => {
-    const rooms = useSelector((state: RootState) => state.users.rooms);
+    const rooms = useSelector((state: RootState) => state.app.rooms);
     const el: String[] | undefined = rooms.find(item=> item[0] === params.slug)
     
     return (
