@@ -1,4 +1,4 @@
-'use client'
+ 
 import React, { useEffect } from 'react';
 import { Button, Checkbox, Form, message, Input, Flex, FormProps } from 'antd';
 import type { RootState } from '@/app/redux/store'
@@ -51,7 +51,7 @@ const Auth: React.FC = () => {
     }
     console.log('values.remember ', values.remember);
     
-    if (values.remember) {
+    if (values.remember && values.username && values.password) {
       sessionStorage.setItem('username', values.username);
       sessionStorage.setItem('password', values.password);
     }

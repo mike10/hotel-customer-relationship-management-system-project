@@ -1,9 +1,13 @@
 import { createSlice } from '@reduxjs/toolkit'
-
+interface IGetRooms {
+  room:number, 
+  status:boolean, 
+  info:string
+}
 const initialState: {
     auth: boolean,
     mess: string,
-    rooms: Array<Array<string>>,
+    rooms: Array<IGetRooms>,
  } = {auth:false, mess:'', rooms:[]}
 
 const appSlice = createSlice({
@@ -14,14 +18,13 @@ const appSlice = createSlice({
       state.auth = true;
     },
     setMess(state, action) {
-      //console.log("action", action);
       state.mess = action.payload;
     },
     registration(state, action) {},
     enter(state, action) {},
     userAdded() {},
     roomAdded(state, action) {
-      console.log('roomAdded',action.payload);
+      //console.log('roomAdded',action.payload);
       state.rooms = action.payload;
     },
   },

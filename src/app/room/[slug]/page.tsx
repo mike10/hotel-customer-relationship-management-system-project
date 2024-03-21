@@ -1,17 +1,26 @@
 'use client'
 import { useSelector } from 'react-redux';
 import type { RootState } from '@/app/redux/store'
+import CheckIn from '@/app/components/CheckIn';
 
-const Page = ({ params }: { params: { slug: string } }) => {
+interface IGetRooms {
+  room:number, 
+  status:boolean, 
+  info:string
+}
+
+const Page = ({ params }: { params: { slug: number } }) => {
     const rooms = useSelector((state: RootState) => state.app.rooms);
-    const el: String[] | undefined = rooms.find(item=> item[0] === params.slug)
+    const room: IGetRooms | undefined = rooms.find(item => item.room === params.slug)
     
     return (
         <>
-            <p>Room {params.slug}</p>
+            <p>Room {room?.room}</p>
           {
-            <p>Addition information: {el == undefined ? '-' : el[1]} </p>
-          } 
+
+            <p>Addition information: {room?.info} </p>
+          }
+          <CheckIn room={room?.room} /> 
         </>
            
     )

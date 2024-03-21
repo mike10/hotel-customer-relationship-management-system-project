@@ -8,7 +8,6 @@ import { getAuth, signInWithEmailAndPassword , createUserWithEmailAndPassword } 
 import { initializeApp } from "firebase/app";
 import { getFirestore, collection, getDocs, doc, getDoc  } from "firebase/firestore";
 
-import { message } from 'antd';
 const saga = createSagaMiddleware()
 let errorMessReg = ''
 
@@ -106,20 +105,34 @@ async function createNewAccount(username:string, password:string){
   return result 
 }
 
-async function getRooms(){
-  const docRef = doc(db, "hotel", "rooms");
-  const docSnap = await getDoc(docRef);
-  let temp:Array<object> = [{}]
+interface IGetRooms {
+  room:number, 
+  status:boolean, 
+  info:string
+}
 
-  if (docSnap.exists()) {
+async function getRooms(){
+  /* const docRef = doc(db, "rooms");
+  con st docSnap = await getDoc(docRef);*/
+  let temp:Array<IGetRooms> = []
+
+  const querySnapshot = await getDocs(collection(db, "rooms"));
+  querySnapshot.forEach((doc) => {
+    //console.log(doc.id, doc.data());
+    temp.push(doc.data())
+  });
+
+  /* if (docSnap.exists()) {
     console.log("Document data:", docSnap.data());
     //temp = docSnap.data()
-    temp = Object.entries(docSnap.data())
+    //console.log();
+    
+    //temp = Object.entries(docSnap.data())
   } else {
     // docSnap.data() will be undefined in this case
     console.log("No such document!");
   }
-  console.log(temp);
+  console.log(temp); */
   return temp;
    
 }
