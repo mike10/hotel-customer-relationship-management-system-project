@@ -49,7 +49,8 @@ const Auth: React.FC = () => {
     } else {
       dispatch(enter(values));
     }
-
+    console.log('values.remember ', values.remember);
+    
     if (values.remember) {
       sessionStorage.setItem('username', values.username);
       sessionStorage.setItem('password', values.password);
@@ -64,6 +65,8 @@ const Auth: React.FC = () => {
     //let values2 = form.getFieldsValue();
     let username:string|null = sessionStorage.getItem('username')
     let password:string|null = sessionStorage.getItem('password');
+    console.log('username password: ', username, password);
+    
     if (username && password) {
       dispatch(enter({ username, password }));
     }
