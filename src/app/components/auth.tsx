@@ -45,8 +45,8 @@ const Auth: React.FC = () => {
     console.log('values.remember ', values.remember);
     
     if (values.remember && values.username && values.password) {
-      sessionStorage.setItem('username', values.username);
-      sessionStorage.setItem('password', values.password);
+      localStorage.setItem('username', values.username);
+      localStorage.setItem('password', values.password);
     }
   };
   
@@ -56,13 +56,13 @@ const Auth: React.FC = () => {
 
   useEffect(() => {
     //let values2 = form.getFieldsValue();
-    let username:string|null = sessionStorage.getItem('username')
-    let password:string|null = sessionStorage.getItem('password');
+    let username:string|null = localStorage.getItem('username')
+    let password:string|null = localStorage.getItem('password');
     console.log('username password: ', username, password);
     
     if (username && password) {
       dispatch(enter({ username, password }));
-    }
+    } 
     
   }, []);
 
@@ -81,9 +81,10 @@ const Auth: React.FC = () => {
         autoComplete="off"
       >
         <Form.Item<FieldType>
-          label="Username"
+          label="Email"
+          rules={[{  required: true, type: 'email' }]}
           name="username"
-          rules={[{ required: true, message: "Please input your username!" }]}
+          
         >
           <Input />
         </Form.Item>
