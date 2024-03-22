@@ -1,6 +1,6 @@
 'use client'
 import { useSelector, useDispatch } from 'react-redux';
-import type { RootState } from '@/app/redux/store'
+import type { RootState } from '@/app/utils/store'
 import { Table, Button, Flex } from 'antd';
 import type { TableProps } from 'antd';
 import Link from 'next/link'
@@ -31,7 +31,6 @@ const columns: TableProps<DataType>['columns'] = [
     key: 'action',
     render: (_, record) => (
       <CheckIn room={record.room}/> 
-      
     ),
   },
 ];

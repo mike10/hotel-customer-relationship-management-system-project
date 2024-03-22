@@ -1,9 +1,9 @@
- 
+'use client' 
 import React, { useEffect } from 'react';
 import { Button, Checkbox, Form, message, Input, Flex, FormProps } from 'antd';
-import type { RootState } from '@/app/redux/store'
+import type { RootState } from '@/app/utils/store'
 import { useRouter } from 'next/navigation'
-import { registration, enter } from '@/app/redux/appSlice'
+import { registration, enter } from '@/app/utils/appSlice'
 import { useSelector, useDispatch } from 'react-redux';
 
 
@@ -15,9 +15,6 @@ type FieldType = {
 
 let regButtonPass: boolean = true
 
-
-
-
 const Auth: React.FC = () => {
   	
   const [form] = Form.useForm();
@@ -27,10 +24,6 @@ const Auth: React.FC = () => {
   const mess = useSelector((state: RootState) => state.app.mess);
   const dispatch = useDispatch()
   
-  useEffect(() => {
-    
-  }, []);
-
   if(auth) {
     router.push(`/mainlayout/`)
   }
