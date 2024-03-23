@@ -1,6 +1,6 @@
 'use client' 
 import React, { useEffect } from 'react';
-import { Button, Checkbox, Form, message, Input, Flex, FormProps } from 'antd';
+import { Button, Checkbox, Form, message, Input, Flex, FormProps, CheckboxProps } from 'antd';
 import type { RootState } from '@/app/utils/store'
 import { useRouter } from 'next/navigation'
 import { registration, enter } from '@/app/utils/appSlice'
@@ -55,18 +55,20 @@ const Auth: React.FC = () => {
   };
 
   useEffect(() => {
-    //let values2 = form.getFieldsValue();
     let username:string|null = localStorage.getItem('username')
     let password:string|null = localStorage.getItem('password');
-    console.log('username password: ', username, password);
     
     if (username && password) {
       dispatch(enter({ username, password }));
     } 
-    
   }, []);
 
+  const onChange: CheckboxProps["onChange"] = (e) => {
+    form.setFieldValue('remember', e.target.checked)
+  };
+  
   return (
+    
     <>
       {contextHolder}
       <Form
@@ -82,7 +84,7 @@ const Auth: React.FC = () => {
       >
         <Form.Item<FieldType>
           label="Email"
-          rules={[{  required: true, type: 'email' }]}
+          rules={[{  required: true, type: 'email', message: "This is not a valid email!" }]}
           name="username"
           
         >
@@ -99,10 +101,11 @@ const Auth: React.FC = () => {
 
         <Form.Item<FieldType>
           name="remember"
-          //valuePropName="checked"
+          valuePropName="checked"
           wrapperCol={{ offset: 8, span: 16 }}
+          onChange={onChange}
         >
-          <Checkbox>Remember me</Checkbox>
+          <Checkbox >Remember me</Checkbox>
         </Form.Item>
 
         <Flex justify="center" align="center">
