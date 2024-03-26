@@ -106,7 +106,7 @@ const Auth: React.FC = () => {
           onChange={onChange}
         >
           <Checkbox >Remember me</Checkbox>
-git branch        </Form.Item>
+  	    </Form.Item>
 
         <Flex justify="center" align="center">
           <Form.Item wrapperCol={{ offset: 8, span: 16 }}>

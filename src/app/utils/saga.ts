@@ -44,36 +44,39 @@ function* workEnter(action: any) {
   } else yield put(setMess("Invalid email or password."));
 }
 
-function* workCheckIn(action: any) {
-  const roomNumber:number = action.payload
-  console.log(roomNumber);
-  yield updateCheckIn(roomNumber)
+function* workCheckIn(action: {payload:{room:number, checkIn:string, checkOut:string}}) {
+  const { room, checkIn, checkOut } = action.payload;
+  console.log(action.payload);
+  
+  yield updateCheckIn(room, checkIn, checkOut)
+
   const temp:IGetRooms[] = yield getRooms();
+
   yield put(roomAdded(temp));
 }
 
-async function updateCheckIn(room:number) {
+async function updateCheckIn(room:number, dateCheckIn:string, dateCheckOut:string) {
   const batch = writeBatch(db);
   let temp: IGetRooms = {
     room: 0,
-    status: false,
-    info: ''
+    //status: false,
+    info: '',
+    checkIn: '',
+    checkOut: ''
   };
   let sfDocRef: DocumentReference 
   const querySnapshot = await getDocs(collection(db, "rooms"));
-  //console.log(querySnapshot);
+  console.log(room, dateCheckIn, dateCheckOut);
   
   querySnapshot.forEach((doc) => {
     temp = <IGetRooms>doc.data();
-    console.log(doc.id);
     
       if(temp.room == room) {
         sfDocRef = <DocumentReference>doc.ref
         return
       }     
     });
-   // console.log(sfDocRef);
-  //console.log('querySnapshot', sfDocRefp.data());
+
   try {
     const newStatus = await runTransaction(db, async (transaction) => {
       const sfDoc:any = await transaction.get(sfDocRef);
@@ -81,14 +84,9 @@ async function updateCheckIn(room:number) {
         throw "Document does not exist!";
       }
       console.log(sfDoc.data());
-      let newStat:boolean = sfDoc.data().status;
-      console.log(newStat);
-      
-      transaction.update(sfDocRef, { status: !newStat });
+      transaction.update(sfDocRef, { checkIn: dateCheckIn, checkOut: dateCheckOut});
     });
-    //console.log("Status ", newStatus);
   } catch (e) {
-    // This will be a "population is too big" error.
     console.error(e);
   }
 }

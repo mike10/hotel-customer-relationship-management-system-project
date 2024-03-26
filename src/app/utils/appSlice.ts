@@ -22,7 +22,6 @@ const appSlice = createSlice({
     checkIn(state, action) {},
     //userAdded() {},
     roomAdded(state, action) {
-      //console.log('roomAdded',action.payload);
       state.rooms = action.payload;
     },
   },
