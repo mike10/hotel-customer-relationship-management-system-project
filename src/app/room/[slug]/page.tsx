@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import CheckIn from '@/components/CheckIn';
 import { IRoom } from '@/utils/constants';
 import { Flex } from 'antd';
-import { getRoomSelector, getRoomsSelector } from '@/utils/appSlice';
+import { getRoomSelector} from '@/utils/appSlice';
 import { useEffect } from 'react';
 
 const Page = ({ params }: { params: { slug: number } }) => {
