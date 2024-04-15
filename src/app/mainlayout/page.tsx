@@ -1,8 +1,8 @@
-import MainLayout from '@/app/components/MainLayout'
+import MainLayout from '@/components/MainLayout'
 
 const Page = () => {
     return (
-          <MainLayout/>
+        <MainLayout/>
     )
 }
 
