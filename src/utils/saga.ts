@@ -11,8 +11,10 @@ export function* rootSaga() {
 function* watchClickSaga() {
   yield takeEvery('REGISTRATION', workRegistration);
   yield takeEvery('ENTER', workEnter);
+  yield takeEvery('AUTH', workAuth);
+  yield takeEvery('CHECK_IN', workCheckIn);
   yield takeEvery('GET_ROOM', workGetRoom);
-  yield takeEvery('CHECK-IN', workCheckIn)
+  
 }
 
 function* workRegistration(action: {type:string, payload:IAuth}) {
@@ -38,14 +40,21 @@ function* workEnter(action: {type:string, payload:IAuth}) {
   } else yield put(setMess("Invalid email or password.")); 
 }
 
-function* workCheckIn(action: {payload:{room:number, checkIn:string, checkOut:string}}) {
+function* workAuth() {
+  let temp: IRoom[] = [];
+  temp = yield getRooms();
+  yield put(roomsAdd(temp));
+  yield put(setAuth());
+}
+
+function* workCheckIn(action: {type:string, payload:{room:number, checkIn:string, checkOut:string}}) {
   const { room, checkIn, checkOut } = action.payload;
   yield updateCheckIn(room, checkIn, checkOut)
   const temp:IRoom[] = yield getRooms();
   yield put(roomsAdd(temp));
 }
 
-function* workGetRoom(action:{payload:number}) {
+function* workGetRoom(action:{type:string, payload:number}) {
   const room:IRoom = yield getRoom(action.payload)
   yield put(roomAdd(room))
 }

@@ -2,9 +2,10 @@
 import React, { useEffect } from 'react';
 import { Button, Checkbox, Form, message, Input, Flex, FormProps, CheckboxProps } from 'antd';
 import { useRouter } from 'next/navigation'
-import { getAuthSelector, getMessSelector } from '@/utils/appSlice'
+import { getAuthSelector, getMessSelector, setAuth } from '@/utils/appSlice'
 import { useSelector, useDispatch } from 'react-redux';
 import { FieldType } from '@/utils/constants';
+import { getAuthFirestore } from '@/utils/firestore';
 
 const Auth: React.FC = () => {
   	
@@ -24,6 +25,11 @@ const Auth: React.FC = () => {
     if(auth)
       router.push('/mainlayout')
   }, [auth])
+
+  useEffect(()=>{
+    const auth = getAuthFirestore()
+    if(auth) dispatch({type: 'AUTH'})
+  }, [])
 
   const onFinish: FormProps<FieldType>["onFinish"] = (values:FieldType) => {
     

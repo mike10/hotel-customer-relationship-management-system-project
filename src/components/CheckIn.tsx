@@ -6,8 +6,6 @@ import { useState } from "react";
 import customParseFormat from 'dayjs/plugin/customParseFormat';
 import { IRoom } from '@/utils/constants'
 import dayjs from 'dayjs'
-import { useEffect } from 'react';
-import { disableNetwork } from "firebase/firestore";
 
 const CheckIn = (props: IRoom) => {
   
@@ -24,8 +22,7 @@ const CheckIn = (props: IRoom) => {
 
   const handleOk = () => {
     if(dateCheckIn && dateCheckOut){
-      console.log(dateCheckIn, dateCheckOut);
-      dispatch({type:'CHECK-IN', payload:{room: props.room,  checkIn:dateCheckIn, checkOut:dateCheckOut}});
+      dispatch({type:'CHECK_IN', payload:{room: props.room,  checkIn:dateCheckIn, checkOut:dateCheckOut}});
     }
     setIsModalOpen(false);
   };
@@ -87,7 +84,7 @@ const CheckIn = (props: IRoom) => {
         onOk={handleOk}
         onCancel={handleCancel}
       >
-        <RangePicker  value = {props.checkIn ? [dayjs(props.checkIn, 'YYYY-MM-DD HH:mm'), dayjs(props.checkOut, 'YYYY-MM-DD HH:mm')] : ''}
+        <RangePicker  value = {props.checkIn ? [dayjs(props.checkIn, 'YYYY-MM-DD HH:mm'), dayjs(props.checkOut, 'YYYY-MM-DD HH:mm')] : null}
           onChange={(d, d2)=>{ 
             console.log(d, d2);
             dateCheckIn= d2[0]

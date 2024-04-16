@@ -24,6 +24,10 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
+export const getAuthFirestore = () => {
+  const auth = getAuth();
+  return auth
+}
 
 export async function createNewAccount(username: string, password: string) {
     let result: boolean = false;
@@ -32,7 +36,6 @@ export async function createNewAccount(username: string, password: string) {
     await createUserWithEmailAndPassword(auth, username, password)
       .then((userCredential) => {
         const user = userCredential.user;
-        console.log(user);
         result = true;
       })
       .catch(async (error) => {
@@ -69,12 +72,11 @@ export async function updateCheckIn(room:number, dateCheckIn:string, dateCheckOu
   let temp: IRoom;
   let sfDocRef: DocumentReference 
   const querySnapshot = await getDocs(collection(db, "rooms"));
-  console.log(room, dateCheckIn, dateCheckOut);
   
   querySnapshot.forEach((doc) => {
     temp = <IRoom>doc.data();
     
-      if(temp.room == room) {
+      if(temp.room === room) {
         sfDocRef = <DocumentReference>doc.ref
         return
       }     
@@ -86,7 +88,6 @@ export async function updateCheckIn(room:number, dateCheckIn:string, dateCheckOu
       if (!sfDoc.exists()) {
         throw "Document does not exist!";
       }
-      console.log(sfDoc.data());
       transaction.update(sfDocRef, { checkIn: dateCheckIn, checkOut: dateCheckOut});
     });
   } catch (e) {
@@ -103,15 +104,19 @@ export async function getRooms() {
   return temp;
 }
 
-export async function getRoom(NRoom:number) {
+export async function getRoom(NRoom:number):Promise<IRoom|null> {
   const docRef = doc(db, "rooms", `room-${NRoom}`);
   const docSnap = await getDoc(docRef);
+  let temp:IRoom 
 
   if (docSnap.exists()) {
     console.log("Document data:", docSnap.data());
-    return docSnap.data()
+    temp = <IRoom>docSnap.data()
+    return temp
   } else {
     // docSnap.data() will be undefined in this case
     console.log("No such document!");
+    return null
   }
+  
 }

@@ -1,5 +1,5 @@
 'use client'
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { Table,Flex } from 'antd';
 import type { TableProps } from 'antd';
 import Link from 'next/link'
@@ -8,6 +8,7 @@ import { useEffect } from 'react';
 import { IRoom } from '@/utils/constants' 
 import { getAuthSelector, getRoomsSelector } from "@/utils/appSlice";
 import { useRouter } from 'next/navigation'
+import { getAuthFirestore } from '@/utils/firestore';
 
 interface DataType {
   key: number;
@@ -20,10 +21,13 @@ const MainLayout = () => {
     const rooms:IRoom[]|undefined = useSelector(getRoomsSelector);
     const auth = useSelector(getAuthSelector);
     const router = useRouter()
+    const dispatch = useDispatch()
 
     useEffect(()=>{
       if(!auth) {
-        router.push('/')
+        const authIsTrue = getAuthFirestore()
+        if(authIsTrue) dispatch({type: 'AUTH'})
+          else router.push('/')
       }
     }, [auth])
 
